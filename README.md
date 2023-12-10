@@ -127,6 +127,10 @@ window.scrollBy({ top: cardHeight \* 2, behavior: "smooth", });
 завантаження зображень під час прокручування сторінки. Ми надаємо тобі повну
 свободу дій в реалізації, можеш використовувати будь-які бібліотеки.
 
+https://pixabay.com/api/
+
+key: '41165445-48712648032be3487370f8cf8'
+
 npm i notiflix
 
 import Notiflix from 'notiflix';

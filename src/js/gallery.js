@@ -11,7 +11,7 @@ export default class NewsApiService {
             method: 'get',
             url: 'https://pixabay.com/api/',
             params: {
-                key: '34523545-f21683fd59bfc3e4e2549fe07',
+                key: '41165445-48712648032be3487370f8cf8',
                 q: `${this.searchQuery}`,
                 image_type: 'photo',
                 orientation: 'horizontal',
