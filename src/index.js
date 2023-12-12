@@ -1,4 +1,4 @@
-import NewsApiService from './js/gallery';
+import PixabayApiService from './js/pixabay-api';
 import { lightbox } from './js/lightbox';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
@@ -8,7 +8,7 @@ const refs = {
     loadMoreBtn: document.querySelector('.load-more'),
 };
 let isShown = 0;
-const newsApiService = new NewsApiService();
+const pixabayApiService = new PixabayApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
@@ -28,7 +28,7 @@ function onSearch(element) {
         element.currentTarget.elements.searchQuery.value.trim();
     newsApiService.resetPage();
 
-    if (newsApiService.query === '') {
+    if (pixabayApiService.query === '') {
         Notify.warning('Please, fill the main field');
         return;
     }
@@ -39,14 +39,14 @@ function onSearch(element) {
 }
 
 function onLoadMore() {
-    newsApiService.incrementPage();
+    pixabayApiService.incrementPage();
     fetchGallery();
 }
 
 async function fetchGallery() {
     refs.loadMoreBtn.classList.add('is-hidden');
 
-    const result = await newsApiService.fetchGallery();
+    const result = await pixabayApiService.fetchGallery();
     const { hits, total } = result;
     isShown += hits.length;
 
