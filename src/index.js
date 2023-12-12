@@ -24,9 +24,9 @@ function onSearch(element) {
     element.preventDefault();
 
     refs.galleryContainer.innerHTML = '';
-    newsApiService.query =
+    pixabayApiService.query =
         element.currentTarget.elements.searchQuery.value.trim();
-    newsApiService.resetPage();
+    pixabayApiService.resetPage();
 
     if (pixabayApiService.query === '') {
         Notify.warning('Please, fill the main field');
@@ -34,21 +34,26 @@ function onSearch(element) {
     }
 
     isShown = 0;
-    fetchGallery();
+    fetchPictures();
     onRenderGallery(hits);
 }
 
 function onLoadMore() {
     pixabayApiService.incrementPage();
-    fetchGallery();
+    fetchPictures();
 }
 
-async function fetchGallery() {
+async function fetchPictures() {
     refs.loadMoreBtn.classList.add('is-hidden');
 
-    const result = await pixabayApiService.fetchGallery();
+    const result = await pixabayApiService.fetchPictures();
     const { hits, total } = result;
+    const totalHits = result.totalHits;
+    const totalPages = totalHits / 40;
+    console.log("result", result);
     isShown += hits.length;
+    console.log("hits", hits);
+    console.log("total", total);
 
     if (!hits.length) {
         Notify.failure(
@@ -62,13 +67,14 @@ async function fetchGallery() {
     isShown += hits.length;
 
     if (isShown < total) {
-        Notify.success(`Hooray! We found ${total} images !!!`);
+        Notify.success(`Hooray! We found ${totalHits} images on ${Math.ceil(totalPages)} pages !!!`);
         refs.loadMoreBtn.classList.remove('is-hidden');
     }
 
     if (isShown >= total) {
         Notify.info("We're sorry, but you've reached the end of search results.");
     }
+    return hits;
 }
 
 function onRenderGallery(elements) {

@@ -6,12 +6,12 @@ export default class PixabayApiService {
         this.page = 1;
         this.PER_PAGE = 40;
     }
-    async fetchGallery() {
+    async fetchPictures() {
         const axiosOptions = {
             method: 'get',
             url: 'https://pixabay.com/api/',
             params: {
-                key: '41165445-48712648032be3487370f8cf8',
+                key: '34523545-f21683fd59bfc3e4e2549fe07',
                 q: `${this.searchQuery}`,
                 image_type: 'photo',
                 orientation: 'horizontal',
@@ -25,7 +25,7 @@ export default class PixabayApiService {
 
             const data = response.data;
 
-            this.incrementPage();
+            // this.incrementPage();
             return data;
         } catch (error) {
             console.error(error);
