@@ -7,21 +7,11 @@
     <link rel="shortcut icon" href="./images/favicon.ico" />
     <link rel="stylesheet" href="./css/styles.css" />
     <script src="./index.js" type="module" defer></script>
+    <!-- <script src="./js/header-scroll.js" type="module" defer async></script> -->
     <title>Gallery search</title>
   </head>
   <body>
-    <div class="intro">
-      <div class="video">
-        <video
-          src="./images/video-abstract.mp4"
-          autoplay
-          muted
-          loop
-          class="video-media"
-        ></video>
-      </div>
-    </div>
-    <div class="intro-content">
+    <header>
       <form class="search-form" id="search-form">
         <a href="https://pixabay.com/" target="_blank">
           <img
@@ -47,14 +37,28 @@
           />Search
         </button>
       </form>
-
-      <div class="gallery"></div>
-
-      <div class="preloader is-hidden">
-        <div class="loader"></div>
+    </header>
+    <main>
+      <div class="intro">
+        <div class="video">
+          <video
+            src="./images/video-abstract.mp4"
+            autoplay
+            muted
+            loop
+            class="video-media"
+          ></video>
+        </div>
       </div>
+      <div class="intro-content">
+        <div class="gallery"></div>
 
-      <button type="button" class="load-more is-hidden">Load more</button>
-    </div>
+        <div class="preloader is-hidden">
+          <div class="loader"></div>
+        </div>
+
+        <button type="button" class="load-more is-hidden">Load more</button>
+      </div>
+    </main>
   </body>
 </html>

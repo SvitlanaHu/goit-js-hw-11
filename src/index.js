@@ -48,7 +48,7 @@ async function fetchPictures() {
 
     const result = await pixabayApiService.fetchPictures();
     const { hits, total } = result;
-    const totalHits = result.totalHits;
+    let totalHits = result.totalHits;
     const totalPages = totalHits / 40;
     console.log("result", result);
     isShown += hits.length;
@@ -66,9 +66,11 @@ async function fetchPictures() {
     onRenderGallery(hits);
     isShown += hits.length;
 
+
     if (isShown < total) {
         Notify.success(`Hooray! We found ${totalHits} images on ${Math.ceil(totalPages)} pages !!!`);
         refs.loadMoreBtn.classList.remove('is-hidden');
+
     }
 
     if (isShown >= total) {
