@@ -5,13 +5,13 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const refs = {
     searchForm: document.querySelector('.search-form'),
     galleryContainer: document.querySelector('.gallery'),
-    loadMoreBtn: document.querySelector('.load-more'),
+    // loadMoreBtn: document.querySelector('.load-more'),
 };
 let isShown = 0;
 const pixabayApiService = new PixabayApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
-refs.loadMoreBtn.addEventListener('click', onLoadMore);
+// refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
 const options = {
     rootMargin: '50px',
@@ -22,6 +22,7 @@ const observer = new IntersectionObserver(onLoadMore, options);
 
 function onSearch(element) {
     element.preventDefault();
+    window.addEventListener('scroll', handleScroll);
 
     refs.galleryContainer.innerHTML = '';
     pixabayApiService.query =
@@ -44,36 +45,38 @@ function onLoadMore() {
 }
 
 async function fetchPictures() {
-    refs.loadMoreBtn.classList.add('is-hidden');
+    // refs.loadMoreBtn.classList.add('is-hidden');
 
     const result = await pixabayApiService.fetchPictures();
     const { hits, total } = result;
-    let totalHits = result.totalHits;
+    const totalHits = result.totalHits;
     const totalPages = totalHits / 40;
     console.log("result", result);
     isShown += hits.length;
     console.log("hits", hits);
     console.log("total", total);
+    console.log(!hits.length);
 
-    if (!hits.length) {
+    if (totalHits === 0) {
         Notify.failure(
             `Sorry, there are no images matching your search query. Please try again.`
         );
-        refs.loadMoreBtn.classList.add('is-hidden');
+        // refs.loadMoreBtn.classList.add('is-hidden');
         return;
     }
 
     onRenderGallery(hits);
     isShown += hits.length;
-
+    Notify.success(`Hooray! We found ${totalHits} images on ${Math.ceil(totalPages)} pages !!!`);
+    totalHits -= isShown;
+    totalPages -= 1;
 
     if (isShown < total) {
-        Notify.success(`Hooray! We found ${totalHits} images on ${Math.ceil(totalPages)} pages !!!`);
-        refs.loadMoreBtn.classList.remove('is-hidden');
+        // refs.loadMoreBtn.classList.remove('is-hidden');
 
     }
 
-    if (isShown >= total) {
+    if (isShown >= 0) {
         Notify.info("We're sorry, but you've reached the end of search results.");
     }
     return hits;
@@ -119,4 +122,26 @@ function onRenderGallery(elements) {
         .join('');
     refs.galleryContainer.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
+}
+
+// Функція для бескінечного скролу
+function handleScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+        onLoadMore();
+    }
+    // console.log(scrollTop, scrollHeight, clientHeight);
+}
+
+
+// Цей код дозволяє автоматично прокручувати сторінку на висоту 2 карток галереї, коли вона завантажується
+function autoScroll() {
+    const { height: cardHeight } = document
+        .querySelector('.gallery')
+        .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+    });
 }
