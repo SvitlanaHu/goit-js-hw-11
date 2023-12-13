@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { KEY } from './pixabay-api-key';
 
 export default class PixabayApiService {
     constructor() {
@@ -11,7 +12,7 @@ export default class PixabayApiService {
             method: 'get',
             url: 'https://pixabay.com/api/',
             params: {
-                key: '34523545-f21683fd59bfc3e4e2549fe07',
+                key: KEY,
                 q: `${this.searchQuery}`,
                 image_type: 'photo',
                 orientation: 'horizontal',
