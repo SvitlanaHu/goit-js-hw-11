@@ -20,7 +20,7 @@ async function checkPosition() {
 
     if (position > threshold) {
         // Якщо ми перетнули смугу-поріг, викликаємо потрібну дію.
-        await fetchPictures()
+        // await fetchPictures()
         body.classList.add('body--no-transparency');
     } else {
         body.classList.remove('body--no-transparency');

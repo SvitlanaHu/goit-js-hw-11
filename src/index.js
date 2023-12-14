@@ -20,9 +20,9 @@ const options = {
     root: null,
     threshold: 0.3,
 };
-const observer = new IntersectionObserver(onLoadMore, options);
+// const observer = new IntersectionObserver(onLoadMore, options);
 
-function onSearch(element) {
+async function onSearch(element) {
     element.preventDefault();
     window.addEventListener('scroll', handleScroll);
 
@@ -30,25 +30,64 @@ function onSearch(element) {
     pixabayApiService.query =
         element.currentTarget.elements.searchQuery.value.trim();
     pixabayApiService.resetPage();
-
+    pixabayApiService.page = 1;
     if (pixabayApiService.query === '') {
         Notify.warning('Please, fill the main field');
         return;
     }
+    try {
+        const response = await pixabayApiService.fetchPictures();
+        const totalImages = response.totalHits;
+        if (totalImages === 0) {
+            alertEndOfSearch();
+            return;
+        }
 
-    isShown = 0;
-    fetchPicturesNext();
-    onRenderGallery(hits);
-    lightbox.refresh();
-    autoScroll();
+        onRenderGallery(response.hits);
+        lightbox.refresh();
+        autoScroll();
+        Notify.success(`Hooray! We found ${response.totalHits} images on ${Math.ceil(response.totalHits / perPage)} pages !!!`);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
-function onLoadMore() {
-    pixabayApiService.incrementPage();
-    fetchPicturesNext();
-}
+async function onLoadMore() {
+    pixabayApiService.page += 1;
 
-async function fetchPicturesNext() {
+    try {
+        const result = await pixabayApiService.fetchPictures();
+        const { hits, total } = result;
+        const totalHits = result.totalHits;
+        const totalPages = totalHits / perPage;
+        console.log("result", result);
+        // isShown += hits.length;
+        console.log("hits", hits);
+        console.log("total", total);
+        console.log("totalHits", totalHits);
+        const lastPages = Math.ceil(totalHits / perPage);
+
+        onRenderGallery(hits);
+        lightbox.refresh();
+        autoScroll();
+        if (lastPages === pixabayApiService.page) {
+            alertEndOfSearch();
+            window.removeEventListener('scroll', handleScroll);
+            return;
+        }
+
+    } catch (error) {
+        alertEndOfSearch();
+    }
+
+}
+// isShown = 0;
+// fetchPicturesNext();
+// onRenderGallery(hits);
+// lightbox.refresh();
+// autoScroll();
+async function fetchPicturesNext(el) {
     // refs.loadMoreBtn.classList.add('is-hidden');
 
     const result = await pixabayApiService.fetchPictures();
@@ -57,9 +96,12 @@ async function fetchPicturesNext() {
     const totalPages = totalHits / perPage;
     console.log("result", result);
     // isShown += hits.length;
-    console.log("hits", hits);
-    console.log("total", total);
-    console.log("totalHits", totalHits);
+    // console.log("hits", hits);
+    // console.log("total", total);
+    // console.log("totalHits", totalHits);
+    el.preventDefault();
+    window.addEventListener('scroll', handleScroll);
+
 
     if (totalHits === 0) {
         Notify.failure(
@@ -69,17 +111,14 @@ async function fetchPicturesNext() {
         return;
     }
 
+
+
     isShown = totalHits;
-    Notify.success(`Hooray! We found ${isShown} images on ${Math.ceil(isShown / perPage)} pages !!!`);
+
     onRenderGallery(hits);
     totalPages -= 1;
 
-    if (isShown <= perPage) {
-        console.log("isShown", isShown);
-    } else {
-        isShown -= perPage;
-        console.log("isShown", isShown);
-    }
+
 
     if (isShown <= perPage) {
         Notify.info("We're sorry, but you've reached the end of search results.");
@@ -127,6 +166,18 @@ function onRenderGallery(elements) {
         .join('');
     refs.galleryContainer.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
+}
+
+function alertNoEmptySearch() {
+    Notify.failure(
+        'The search string cannot be empty. Please specify your search query.'
+    );
+}
+
+function alertEndOfSearch() {
+    Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+    );
 }
 
 // Функція для бескінечного скролу
