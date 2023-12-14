@@ -36,16 +36,18 @@ function onSearch(element) {
     }
 
     isShown = 0;
-    fetchPictures();
+    fetchPicturesNext();
     onRenderGallery(hits);
+    lightbox.refresh();
+    autoScroll();
 }
 
 function onLoadMore() {
     pixabayApiService.incrementPage();
-    fetchPictures();
+    fetchPicturesNext();
 }
 
-async function fetchPictures() {
+async function fetchPicturesNext() {
     // refs.loadMoreBtn.classList.add('is-hidden');
 
     const result = await pixabayApiService.fetchPictures();
