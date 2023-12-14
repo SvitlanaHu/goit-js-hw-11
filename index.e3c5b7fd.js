@@ -1,0 +1,2 @@
+async function n(){const n=document.querySelector("body"),e=document.body.offsetHeight,o=window.innerHeight;window.scrollY+o>e-o/4?(await fetchPictures(),n.classList.add("body--no-transparency")):n.classList.remove("body--no-transparency")}function e(n,e){let o=null;return function(...t){o||(o=setTimeout((()=>{n(...t),clearTimeout(o),o=null}),e))}}window.onscroll=()=>n(),window.addEventListener("scroll",e(n,250)),window.addEventListener("resize",e(n,250));
+//# sourceMappingURL=index.e3c5b7fd.js.map
