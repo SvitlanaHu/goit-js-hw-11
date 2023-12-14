@@ -9,6 +9,7 @@ const refs = {
 };
 let isShown = 0;
 const pixabayApiService = new PixabayApiService();
+const perPage = pixabayApiService.PER_PAGE;
 
 refs.searchForm.addEventListener('submit', onSearch);
 // refs.loadMoreBtn.addEventListener('click', onLoadMore);
@@ -50,12 +51,12 @@ async function fetchPictures() {
     const result = await pixabayApiService.fetchPictures();
     const { hits, total } = result;
     const totalHits = result.totalHits;
-    const totalPages = totalHits / 40;
+    const totalPages = totalHits / perPage;
     console.log("result", result);
-    isShown += hits.length;
+    // isShown += hits.length;
     console.log("hits", hits);
     console.log("total", total);
-    console.log(!hits.length);
+    console.log("totalHits", totalHits);
 
     if (totalHits === 0) {
         Notify.failure(
@@ -65,18 +66,20 @@ async function fetchPictures() {
         return;
     }
 
+    isShown = totalHits;
+    Notify.success(`Hooray! We found ${isShown} images on ${Math.ceil(isShown / perPage)} pages !!!`);
     onRenderGallery(hits);
-    isShown += hits.length;
-    Notify.success(`Hooray! We found ${totalHits} images on ${Math.ceil(totalPages)} pages !!!`);
-    totalHits -= isShown;
     totalPages -= 1;
 
-    if (isShown < total) {
-        // refs.loadMoreBtn.classList.remove('is-hidden');
-
+    if (isShown <= perPage) {
+        console.log("isShown", isShown);
+    } else {
+        isShown -= perPage;
+        console.log("isShown", isShown);
     }
 
-    if (isShown >= 0) {
+
+    if (isShown <= perPage) {
         Notify.info("We're sorry, but you've reached the end of search results.");
     }
     return hits;
