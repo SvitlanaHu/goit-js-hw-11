@@ -10,6 +10,7 @@ const refs = {
 let isShown = 0;
 const pixabayApiService = new PixabayApiService();
 const perPage = pixabayApiService.PER_PAGE;
+let nextPage = 2;
 
 refs.searchForm.addEventListener('submit', onSearch);
 // refs.loadMoreBtn.addEventListener('click', onLoadMore);
@@ -79,7 +80,6 @@ async function fetchPicturesNext() {
         isShown -= perPage;
         console.log("isShown", isShown);
     }
-
 
     if (isShown <= perPage) {
         Notify.info("We're sorry, but you've reached the end of search results.");
