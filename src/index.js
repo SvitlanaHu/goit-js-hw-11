@@ -39,8 +39,13 @@ async function onSearch(element) {
         const response = await pixabayApiService.fetchPictures();
         const totalImages = response.totalHits;
         if (totalImages === 0) {
-            alertEndOfSearch();
+
+            alertNoEmptySearch();
             return;
+        }
+        if (totalImages < perPage) {
+            alertEndOfSearch();
+
         }
 
         onRenderGallery(response.hits);
