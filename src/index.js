@@ -31,6 +31,7 @@ async function onSearch(element) {
         element.currentTarget.elements.searchQuery.value.trim();
     pixabayApiService.resetPage();
     pixabayApiService.page = 1;
+    console.log("query: ", pixabayApiService.query);
     if (pixabayApiService.query === '') {
         Notify.warning('Please, fill the main field');
         return;
@@ -47,7 +48,6 @@ async function onSearch(element) {
             alertEndOfSearch();
 
         }
-
         onRenderGallery(response.hits);
         lightbox.refresh();
         autoScroll();
@@ -55,7 +55,6 @@ async function onSearch(element) {
     } catch (error) {
         console.log(error);
     }
-
 }
 
 async function onLoadMore() {
@@ -65,45 +64,38 @@ async function onLoadMore() {
         const result = await pixabayApiService.fetchPictures();
         const { hits, total } = result;
         const totalHits = result.totalHits;
-        const totalPages = totalHits / perPage;
+        const lastPages = Math.ceil(totalHits / perPage);
         console.log("result", result);
         // isShown += hits.length;
         console.log("hits", hits);
-        console.log("total", total);
-        console.log("totalHits", totalHits);
-        const lastPages = Math.ceil(totalHits / perPage);
+        console.log("total", total, "totalHits", totalHits, "lastPages", lastPages);
 
         onRenderGallery(hits);
         lightbox.refresh();
-        autoScroll();
-        if (lastPages === pixabayApiService.page) {
-            console.log("lastPages", lastPages, "pixabayApiService.page", lastPages);
+        // autoScroll();
+        if (lastPages < pixabayApiService.page) {
             alertEndOfSearch();
             window.removeEventListener('scroll', handleScroll);
             return;
         }
-
     } catch (error) {
         alertEndOfSearch();
     }
-
 }
 
 async function fetchPicturesNext(el) {
     // refs.loadMoreBtn.classList.add('is-hidden');
 
     const result = await pixabayApiService.fetchPictures();
-    const { hits, total } = result;
+    const { hits } = result;
     const totalHits = result.totalHits;
-    const totalPages = totalHits / perPage;
 
     el.preventDefault();
     window.addEventListener('scroll', handleScroll);
 
     isShown = totalHits;
     onRenderGallery(hits);
-    totalPages -= 1;
-    console.log("nextPage", nextPage);
+    // console.log("nextPage", nextPage);
     if (nextPage < Math.ceil(totalHits / perPage)) {
         alertEndOfSearch();
     }
@@ -171,8 +163,6 @@ function handleScroll() {
     if (scrollTop + clientHeight >= scrollHeight - 5) {
         onLoadMore();
     }
-
-    // console.log(scrollTop, scrollHeight, clientHeight);
 }
 
 
