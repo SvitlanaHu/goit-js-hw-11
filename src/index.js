@@ -77,6 +77,7 @@ async function onLoadMore() {
         lightbox.refresh();
         autoScroll();
         if (lastPages === pixabayApiService.page) {
+            console.log("lastPages", lastPages, "pixabayApiService.page", lastPages);
             alertEndOfSearch();
             window.removeEventListener('scroll', handleScroll);
             return;
@@ -87,11 +88,7 @@ async function onLoadMore() {
     }
 
 }
-// isShown = 0;
-// fetchPicturesNext();
-// onRenderGallery(hits);
-// lightbox.refresh();
-// autoScroll();
+
 async function fetchPicturesNext(el) {
     // refs.loadMoreBtn.classList.add('is-hidden');
 
@@ -99,34 +96,16 @@ async function fetchPicturesNext(el) {
     const { hits, total } = result;
     const totalHits = result.totalHits;
     const totalPages = totalHits / perPage;
-    console.log("result", result);
-    // isShown += hits.length;
-    // console.log("hits", hits);
-    // console.log("total", total);
-    // console.log("totalHits", totalHits);
+
     el.preventDefault();
     window.addEventListener('scroll', handleScroll);
 
-
-    if (totalHits === 0) {
-        Notify.failure(
-            `Sorry, there are no images matching your search query. Please try again.`
-        );
-        // refs.loadMoreBtn.classList.add('is-hidden');
-        return;
-    }
-
-
-
     isShown = totalHits;
-
     onRenderGallery(hits);
     totalPages -= 1;
-
-
-
-    if (isShown <= perPage) {
-        Notify.info("We're sorry, but you've reached the end of search results.");
+    console.log("nextPage", nextPage);
+    if (nextPage < Math.ceil(totalHits / perPage)) {
+        alertEndOfSearch();
     }
     return hits;
 }
@@ -175,7 +154,7 @@ function onRenderGallery(elements) {
 
 function alertNoEmptySearch() {
     Notify.failure(
-        'The search string cannot be empty. Please specify your search query.'
+        'Sorry, there are no images matching your search query. Please try again..'
     );
 }
 
@@ -188,9 +167,11 @@ function alertEndOfSearch() {
 // Функція для бескінечного скролу
 function handleScroll() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
     if (scrollTop + clientHeight >= scrollHeight - 5) {
         onLoadMore();
     }
+
     // console.log(scrollTop, scrollHeight, clientHeight);
 }
 
