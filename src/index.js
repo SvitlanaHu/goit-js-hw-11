@@ -46,11 +46,11 @@ async function onSearch(element) {
         }
         if (totalImages < perPage) {
             alertEndOfSearch();
-            return;
+
         }
         onRenderGallery(response.hits);
         lightbox.refresh();
-        autoScroll();
+
         Notify.success(`Hooray! We found ${response.totalHits} images on ${Math.ceil(response.totalHits / perPage)} pages !!!`);
     } catch (error) {
         console.log(error);
@@ -73,7 +73,7 @@ async function onLoadMore() {
         onRenderGallery(hits);
         lightbox.refresh();
         // autoScroll();
-        if (lastPages < pixabayApiService.page) {
+        if (lastPages === pixabayApiService.page) {
             alertEndOfSearch();
             window.removeEventListener('scroll', handleScroll);
             return;
