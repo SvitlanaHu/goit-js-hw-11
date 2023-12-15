@@ -44,9 +44,12 @@ async function onSearch(element) {
             alertNoEmptySearch();
             return;
         }
-        if (totalImages < perPage) {
+        if (totalImages > perPage) {
             alertEndOfSearch();
+            onRenderGallery(response.hits);
+            lightbox.refresh();
 
+            Notify.success(`Hooray! We found ${response.totalHits} images on ${Math.ceil(response.totalHits / perPage)} pages !!!`);
         }
         onRenderGallery(response.hits);
         lightbox.refresh();
