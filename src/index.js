@@ -44,17 +44,12 @@ async function onSearch(element) {
             alertNoEmptySearch();
             return;
         }
-        if (totalImages > perPage) {
+        if (totalImages < perPage) {
             alertEndOfSearch();
-            onRenderGallery(response.hits);
-            lightbox.refresh();
-
-            Notify.success(`Hooray! We found ${response.totalHits} images on ${Math.ceil(response.totalHits / perPage)} pages !!!`);
         }
         onRenderGallery(response.hits);
         lightbox.refresh();
-
-        Notify.success(`Hooray! We found ${response.totalHits} images on ${Math.ceil(response.totalHits / perPage)} pages !!!`);
+        alertResultOfSearch(response.totalHits, Math.ceil(response.totalHits / perPage))
     } catch (error) {
         console.log(error);
     }
@@ -102,7 +97,7 @@ async function fetchPicturesNext(el) {
     if (nextPage < Math.ceil(totalHits / perPage)) {
         alertEndOfSearch();
     }
-    return hits;
+    return hits, totalHits;
 }
 
 function onRenderGallery(elements) {
@@ -149,14 +144,16 @@ function onRenderGallery(elements) {
 
 function alertNoEmptySearch() {
     Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again..'
-    );
+        'Sorry, there are no images matching your search query. Please try again..');
 }
 
 function alertEndOfSearch() {
     Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-    );
+        "We're sorry, but you've reached the end of search results.");
+}
+
+function alertResultOfSearch(nHits, pages) {
+    Notify.success(`Hooray! We found ${nHits} images on ${pages} pages !!!`);
 }
 
 // Функція для бескінечного скролу
