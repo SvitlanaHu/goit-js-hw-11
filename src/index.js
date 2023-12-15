@@ -24,7 +24,7 @@ const options = {
 
 async function onSearch(element) {
     element.preventDefault();
-    window.addEventListener('scroll', handleScroll);
+
 
     refs.galleryContainer.innerHTML = '';
     pixabayApiService.query =
@@ -44,15 +44,21 @@ async function onSearch(element) {
             alertNoEmptySearch();
             return;
         }
+
+        onRenderGallery(response.hits);
+        lightbox.refresh();
+        alertResultOfSearch(response.totalHits, Math.ceil(response.totalHits / perPage));
+
         if (totalImages < perPage) {
             alertEndOfSearch();
         }
-        onRenderGallery(response.hits);
-        lightbox.refresh();
-        alertResultOfSearch(response.totalHits, Math.ceil(response.totalHits / perPage))
+
     } catch (error) {
         console.log(error);
     }
+    window.addEventListener('scroll', handleScroll);
+    return hits, totalHits;
+
 }
 
 async function onLoadMore() {
@@ -68,36 +74,18 @@ async function onLoadMore() {
         console.log("hits", hits);
         console.log("total", total, "totalHits", totalHits, "lastPages", lastPages);
 
-        onRenderGallery(hits);
-        lightbox.refresh();
+
         // autoScroll();
         if (lastPages === pixabayApiService.page) {
             alertEndOfSearch();
             window.removeEventListener('scroll', handleScroll);
             return;
         }
+        onRenderGallery(hits);
+        lightbox.refresh();
     } catch (error) {
         alertEndOfSearch();
     }
-}
-
-async function fetchPicturesNext(el) {
-    // refs.loadMoreBtn.classList.add('is-hidden');
-
-    const result = await pixabayApiService.fetchPictures();
-    const { hits } = result;
-    const totalHits = result.totalHits;
-
-    el.preventDefault();
-    window.addEventListener('scroll', handleScroll);
-
-    isShown = totalHits;
-    onRenderGallery(hits);
-    // console.log("nextPage", nextPage);
-    if (nextPage < Math.ceil(totalHits / perPage)) {
-        alertEndOfSearch();
-    }
-    return hits, totalHits;
 }
 
 function onRenderGallery(elements) {
@@ -160,20 +148,8 @@ function alertResultOfSearch(nHits, pages) {
 function handleScroll() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
+    if (scrollTop + clientHeight >= scrollHeight - 1) {
         onLoadMore();
     }
 }
 
-
-// Цей код дозволяє автоматично прокручувати сторінку на висоту 2 карток галереї, коли вона завантажується
-function autoScroll() {
-    const { height: cardHeight } = document
-        .querySelector('.gallery')
-        .firstElementChild.getBoundingClientRect();
-
-    window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-    });
-}
