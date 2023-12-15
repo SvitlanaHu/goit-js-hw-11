@@ -46,7 +46,7 @@ async function onSearch(element) {
         }
         if (totalImages < perPage) {
             alertEndOfSearch();
-
+            return;
         }
         onRenderGallery(response.hits);
         lightbox.refresh();
