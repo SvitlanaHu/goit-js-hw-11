@@ -49,6 +49,10 @@ async function onSearch(element) {
         lightbox.refresh();
         alertResultOfSearch(response.totalHits, Math.ceil(response.totalHits / perPage));
 
+        if (totalImages < perPage) {
+            alertEndOfSearch();
+        }
+
         if (totalImages > perPage) {
             window.addEventListener('scroll', handleScroll);
         }
